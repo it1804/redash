@@ -7,12 +7,12 @@ from redash import models, utils
 logger = get_job_logger(__name__)
 
 
-def notify_subscriptions(alert, new_state):
+def notify_subscriptions(alert, new_state, metadata):
     host = utils.base_url(alert.query_rel.org)
     for subscription in alert.subscriptions:
         try:
             subscription.notify(
-                alert, alert.query_rel, subscription.user, new_state, current_app, host
+                alert, alert.query_rel, subscription.user, new_state, current_app, host, metadata
             )
         except Exception as e:
             logger.exception("Error with processing destination")
@@ -32,7 +32,7 @@ def should_notify(alert, new_state):
 
 
 @job("default", timeout=300)
-def check_alerts_for_query(query_id):
+def check_alerts_for_query(query_id, metadata):
     logger.debug("Checking query %d for alerts", query_id)
 
     query = models.Query.query.get(query_id)
@@ -62,4 +62,4 @@ def check_alerts_for_query(query_id):
                 logger.debug("Skipping notification (alert muted).")
                 continue
 
-            notify_subscriptions(alert, new_state)
+            notify_subscriptions(alert, new_state, metadata)

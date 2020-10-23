@@ -32,7 +32,7 @@ class HipChat(BaseDestination):
     def icon(cls):
         return "fa-comment-o"
 
-    def notify(self, alert, query, user, new_state, app, host, options):
+    def notify(self, alert, query, user, new_state, app, host, metadata, options):
         try:
             alert_url = "{host}/alerts/{alert_id}".format(host=host, alert_id=alert.id)
             query_url = "{host}/queries/{query_id}".format(host=host, query_id=query.id)
